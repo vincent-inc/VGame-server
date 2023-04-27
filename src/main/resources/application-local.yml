@@ -1,8 +1,6 @@
 server:
   port: 8083
 
-# spring.main.allow-bean-definition-overriding: true
-
 spring.cloud.vault:
     host: 192.168.1.200
     port: 8200
