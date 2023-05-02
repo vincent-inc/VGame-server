@@ -1,4 +1,4 @@
-package com.vincent.inc.Battleship;
+package com.vincent.inc.VGame;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;

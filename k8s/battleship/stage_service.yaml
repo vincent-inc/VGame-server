@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: battleship-stage-service
+  name: VGame-stage-service
   labels:
-    app: battleship-stage
+    app: VGame-stage
 spec:
   type: LoadBalancer
   loadBalancerIP: 10.24.24.106
@@ -15,5 +15,5 @@ spec:
     protocol: TCP
     targetPort: 82 # container port
   selector:
-    app: battleship-stage #find all pod with app name
+    app: VGame-stage #find all pod with app name
   sessionAffinity: None

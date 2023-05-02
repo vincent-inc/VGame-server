@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: battleship-prod
-  namespace: battleship-prod
+  name: VGame-prod
+  namespace: VGame-prod
   labels:
-    app: battleship-prod
+    app: VGame-prod
 spec:
   selector:
     matchLabels:
-      app: battleship-prod
+      app: VGame-prod
   replicas: 3
   strategy:
     rollingUpdate:
@@ -18,11 +18,11 @@ spec:
   template:
     metadata:
       labels:
-        app: battleship-prod
+        app: VGame-prod
     spec:
       containers:
-      - name: battleship-prod
-        image: vincentbuiwork/battleship:prod
+      - name: VGame-prod
+        image: vincentbuiwork/VGame:prod
         imagePullPolicy: Always
         resources:
           requests:

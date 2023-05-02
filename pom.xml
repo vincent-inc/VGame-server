@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.vincent.inc</groupId>
-	<artifactId>Battleship</artifactId>
+	<artifactId>VGame</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Battleship</name>
-	<description>Battleship game server</description>
+	<name>VGame</name>
+	<description>VGame game server</description>
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.1</spring-cloud.version>
@@ -152,7 +152,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>battleship</finalName>
+		<finalName>VGame</finalName>
 	</build>
 	<repositories>
 		<repository>

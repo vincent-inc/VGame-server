@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: battleship-stage
-  namespace: battleship-stage
+  name: VGame-stage
+  namespace: VGame-stage
   labels:
-    app: battleship-stage
+    app: VGame-stage
 spec:
   selector:
     matchLabels:
-      app: battleship-stage
+      app: VGame-stage
   replicas: 1
   strategy:
     rollingUpdate:
@@ -18,11 +18,11 @@ spec:
   template:
     metadata:
       labels:
-        app: battleship-stage
+        app: VGame-stage
     spec:
       containers:
-      - name: battleship-stage
-        image: vincentbuiwork/battleship:stage
+      - name: VGame-stage
+        image: vincentbuiwork/VGame:stage
         imagePullPolicy: Always
         resources:
           requests:

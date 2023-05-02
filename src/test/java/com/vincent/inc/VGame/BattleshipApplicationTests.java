@@ -1,4 +1,4 @@
-package com.vincent.inc.Battleship;
+package com.vincent.inc.VGame;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
