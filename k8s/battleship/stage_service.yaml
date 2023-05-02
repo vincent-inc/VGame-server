@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: VGame-stage-service
+  name: vgame-server-stage-service
   labels:
-    app: VGame-stage
+    app: vgame-server-stage
 spec:
   type: LoadBalancer
   loadBalancerIP: 10.24.24.106
@@ -15,5 +15,5 @@ spec:
     protocol: TCP
     targetPort: 82 # container port
   selector:
-    app: VGame-stage #find all pod with app name
+    app: vgame-server-stage #find all pod with app name
   sessionAffinity: None

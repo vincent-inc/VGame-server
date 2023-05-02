@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: VGame-dev
-  namespace: VGame-dev
+  name: vgame-server-dev
+  namespace: vgame-server-dev
   labels:
-    app: VGame-dev
+    app: vgame-server-dev
 spec:
   selector:
     matchLabels:
-      app: VGame-dev
+      app: vgame-server-dev
   replicas: 1
   strategy:
     rollingUpdate:
@@ -18,11 +18,11 @@ spec:
   template:
     metadata:
       labels:
-        app: VGame-dev
+        app: vgame-server-dev
     spec:
       containers:
-      - name: VGame-dev
-        image: vincentbuiwork/VGame:dev
+      - name: vgame-server-dev
+        image: vincentbuiwork/vgame-server:dev
         imagePullPolicy: Always
         resources:
           requests:

@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: VGame-dev-service
+  name: vgame-server-dev-service
   labels:
-    app: VGame-dev
+    app: vgame-server-dev
 spec:
   type: LoadBalancer
   loadBalancerIP: 10.24.24.106
@@ -15,5 +15,5 @@ spec:
     protocol: TCP
     targetPort: 83 # container port
   selector:
-    app: VGame-dev #find all pod with app name
+    app: vgame-server-dev #find all pod with app name
   sessionAffinity: None
