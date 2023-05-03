@@ -12,22 +12,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Lobby {
-    private int id;
+    private String id;
 
     private String name;
 
     private String description;
     
-    @Builder.Default
     private String currentGame = "N/A";
 
     private String password;
 
     private int currentNumberOfPlayer;
 
-    private int maxPlayer;
+    private int maxPlayer = 2;
 
-    private LobbyGame lobbyGame;
+    private LobbyGame lobbyGame = new LobbyGame();
 
-    private BattleshipGame battleshipGame;
+    private BattleshipGame battleshipGame = new BattleshipGame();
 }

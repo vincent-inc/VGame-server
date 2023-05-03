@@ -1,4 +1,4 @@
-package com.vincent.inc.VGame.model;
+package com.vincent.inc.VGame.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;

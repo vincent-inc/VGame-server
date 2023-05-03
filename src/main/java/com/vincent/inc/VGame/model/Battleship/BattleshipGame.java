@@ -1,5 +1,6 @@
 package com.vincent.inc.VGame.model.Battleship;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -19,5 +20,5 @@ public class BattleshipGame {
 
     private int maxNumberOfShip = 5;
 
-    private List<Board> boards;
+    private List<Board> boards = new ArrayList<>();
 }
