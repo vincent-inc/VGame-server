@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Lobby {
     private String id;
 
@@ -26,7 +25,12 @@ public class Lobby {
 
     private int maxPlayer = 2;
 
-    private LobbyGame lobbyGame = new LobbyGame();
+    private LobbyGame lobbyGame;
 
-    private BattleshipGame battleshipGame = new BattleshipGame();
+    private BattleshipGame battleshipGame;
+
+    public Lobby() {
+        this.lobbyGame = new LobbyGame();
+        this.battleshipGame = new BattleshipGame();
+    }
 }

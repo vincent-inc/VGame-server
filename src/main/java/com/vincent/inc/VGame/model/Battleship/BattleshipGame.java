@@ -9,16 +9,20 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class BattleshipGame {
 
     private int maxPlayer = 2;
 
-    private int currentNumberOfPlayer = this.getBoards().size();
+    private int currentNumberOfPlayer;
 
     private int gridSize = 7;
 
     private int maxNumberOfShip = 5;
 
     private List<Board> boards = new ArrayList<>();
+
+    public BattleshipGame() {
+        this.boards = new ArrayList<>();
+        this.currentNumberOfPlayer = 0;
+    }
 }
