@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +23,13 @@ public class LobbyController {
     private LobbyService lobbyService;
 
     @GetMapping()
-    public List<Lobby> getLobbies(@RequestHeader("user_id") int userId) {
+    public List<Lobby> getLobbies() {
         return this.lobbyService.getAll();
+    }
+
+    @GetMapping("{id}")
+    public Lobby getLobby(@PathVariable("id") String id) {
+        return this.lobbyService.getLobby(id);
     }
 
     @PostMapping()

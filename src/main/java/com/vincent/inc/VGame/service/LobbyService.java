@@ -40,7 +40,7 @@ public class LobbyService {
             String lobby = this.redisTemplate.opsForValue().get(key);
 
             if(lobby == null) {
-                this.removeLobbyIdList(i);
+                this.removeLobbyIndex(i);
                 continue;
             }
 
@@ -48,6 +48,17 @@ public class LobbyService {
         }
 
         return lobbies;
+    }
+
+    public Lobby getLobby(String lobbyId) {
+        String key = String.format("%s.%s", HASH_KEY, lobbyId);
+        String lobby = this.redisTemplate.opsForValue().getAndExpire(key, Duration.ofSeconds(lobbyTTL));
+
+        if(lobby == null) {
+            return (Lobby) HttpResponseThrowers.throwBadRequest("Lobby does not exist");
+        }
+
+        return this.gson.fromJson(lobby, Lobby.class);
     }
 
     public Lobby createLobby(Lobby lobby, int userId) {
@@ -92,13 +103,13 @@ public class LobbyService {
         this.redisTemplate.opsForList().rightPush(key, lobby.getId());
     }
 
-    private void removeLobbyIdList(Lobby lobby) {
+    private void removeLobbyById(String id) {
         String key = String.format("%s.%s", HASH_KEY, "lobbies");
-        long index = this.redisTemplate.opsForList().indexOf(key, lobby.getId());
-        this.redisTemplate.opsForList().remove(key, index, lobby.getId());
+        long index = this.redisTemplate.opsForList().indexOf(key, id);
+        this.redisTemplate.opsForList().remove(key, index, id);
     }
 
-    private void removeLobbyIdList(int index) {
+    private void removeLobbyIndex(int index) {
         String key = String.format("%s.%s", HASH_KEY, "lobbies");
         String uuid = this.redisTemplate.opsForList().index(key, index);
         this.redisTemplate.opsForList().remove(key, index, uuid);
