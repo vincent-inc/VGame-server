@@ -52,7 +52,7 @@ public class LobbyService {
 
     public Lobby createLobby(Lobby lobby, int userId) {
         List<String> lobbyList = this.getLobbyIdList();
-        User user = this.authenticatorClient.getById(userId);
+        User user = this.getUserWithMask(userId);
         if(user == null)
             HttpResponseThrowers.throwBadRequest("User not found"); 
 
@@ -102,5 +102,18 @@ public class LobbyService {
         String key = String.format("%s.%s", HASH_KEY, "lobbies");
         String uuid = this.redisTemplate.opsForList().index(key, index);
         this.redisTemplate.opsForList().remove(key, index, uuid);
+    }
+
+    private User getUserWithMask(int userId) {
+        User user = this.authenticatorClient.getById(userId);
+        user.setPassword(null);
+        user.getUserProfile().setAddress(null);
+        user.getUserProfile().setCity(null);
+        user.getUserProfile().setEmail(null);
+        user.getUserProfile().setPhoneNumber(null);
+        user.getUserProfile().setState(null);
+        user.getUserProfile().setZip(null);
+
+        return user;
     }
 }

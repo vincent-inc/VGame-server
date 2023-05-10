@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vincent.inc.VGame.model.Lobby;
-import com.vincent.inc.VGame.model.authenticator.User;
-import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
 import com.vincent.inc.VGame.service.LobbyService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
