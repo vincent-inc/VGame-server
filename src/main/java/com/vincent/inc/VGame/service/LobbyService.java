@@ -137,7 +137,15 @@ public class LobbyService {
     }
 
     public void autoCountPlayer(Lobby lobby, User user) {
+        
+    }
 
+    public boolean isInLobby(Lobby lobby, int userId) {
+        return lobby.getLobbyGame().getPlayerList().parallelStream().anyMatch(u -> u.getId() == userId);
+    }
+
+    public boolean isInLobby(String lobbyId, int userId) {
+        return isInLobby(this.getLobby(lobbyId), userId);
     }
 
     public void addToPlayerList(Lobby lobby, User user) {

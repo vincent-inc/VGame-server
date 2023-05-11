@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.service.LobbyService;
+import com.vincent.inc.VGame.util.HttpResponseThrowers;
 
 @RestController
 @RequestMapping("lobbies")
@@ -28,8 +29,11 @@ public class LobbyController {
     }
 
     @GetMapping("{id}")
-    public Lobby getLobby(@PathVariable("id") String id) {
-        return this.lobbyService.getLobby(id);
+    public Lobby getLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId) {
+        if(!this.lobbyService.isInLobby(lobbyId, userId))
+            return (Lobby) HttpResponseThrowers.throwBadRequest("user does not belong to lobby");
+
+        return this.lobbyService.getLobby(lobbyId);
     }
 
     @PostMapping()
