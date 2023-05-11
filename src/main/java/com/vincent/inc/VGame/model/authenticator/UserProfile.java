@@ -27,4 +27,6 @@ public class UserProfile
     private String state;
 
     private String zip;
+
+    private String alias;
 }
