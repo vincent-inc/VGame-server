@@ -114,7 +114,7 @@ public class LobbyService {
         if(lobby.getCurrentNumberOfPlayer() > lobby.getMaxPlayer())
             HttpResponseThrowers.throwBadRequest("Max player reach");
 
-        addToSpectatingList(lobby, user);
+        addToPlayerList(lobby, user);
         this.setLobby(lobby);
         return lobby;
     }
@@ -123,7 +123,7 @@ public class LobbyService {
         User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
 
-        lobby.getLobbyGame().setSpectatingList(lobby.getLobbyGame().getSpectatingList().stream().filter(u -> u.getId() != userId).collect(Collectors.toList()));
+        lobby.getLobbyGame().setPlayerList(lobby.getLobbyGame().getPlayerList().stream().filter(u -> u.getId() != userId).collect(Collectors.toList()));
         
         if(isHost(lobby, user)) {
             lobby.getLobbyGame().setHost(null);
@@ -140,6 +140,14 @@ public class LobbyService {
 
     }
 
+    public void addToPlayerList(Lobby lobby, User user) {
+        if(lobby.getLobbyGame().getPlayerList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
+            return;
+
+        lobby.getLobbyGame().getPlayerList().add(user);
+        lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
+    }
+
     public void addToSpectatingList(Lobby lobby, User user) {
         if(lobby.getLobbyGame().getSpectatingList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
             return;
@@ -150,7 +158,7 @@ public class LobbyService {
 
     public void autoAssignHost(Lobby lobby) {
         if(ObjectUtils.isEmpty(lobby.getLobbyGame().getHost())) {
-            Optional<User> user = lobby.getLobbyGame().getSpectatingList().stream().findAny();
+            Optional<User> user = lobby.getLobbyGame().getPlayerList().stream().findAny();
             if(user.isPresent())
                 lobby.getLobbyGame().setHost(user.get());
         }
