@@ -3,17 +3,20 @@ package com.vincent.inc.VGame.service;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.google.gson.Gson;
 import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.authenticator.User;
 import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
 import com.vincent.inc.VGame.util.HttpResponseThrowers;
+import com.vincent.inc.VGame.util.Sha256PasswordEncoder;
 
 @Service
 public class LobbyService {
@@ -27,6 +30,9 @@ public class LobbyService {
 
     @Autowired
     private AuthenticatorClient authenticatorClient;
+
+    @Autowired
+    private Sha256PasswordEncoder sha256PasswordEncoder;
 
     @Autowired
     private Gson gson;
@@ -61,6 +67,11 @@ public class LobbyService {
         return this.gson.fromJson(lobby, Lobby.class);
     }
 
+    public void setLobby(Lobby lobby) {
+        String key = String.format("%s.%s", HASH_KEY, lobby.getId());
+        this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
+    }
+
     public Lobby createLobby(Lobby lobby, int userId) {
         List<String> lobbyList = this.getLobbyIdList();
         User user = this.getUserWithMask(userId);
@@ -76,6 +87,9 @@ public class LobbyService {
         String key = String.format("%s.%s", HASH_KEY, lobby.getId());
 
         lobby.getLobbyGame().setHost(user);
+
+        if(!ObjectUtils.isEmpty(lobby.getPassword()))
+            lobby.setPassword(this.sha256PasswordEncoder.encode(lobby.getPassword()));
         
         this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
 
@@ -85,6 +99,33 @@ public class LobbyService {
 
         return lobby;
     }
+
+    public Lobby joinLobby(String lobbyId, int userId) {
+        User user = this.getUserWithMask(userId);
+        Lobby lobby = this.getLobby(lobbyId);
+        addToSpectatingList(lobby, user);
+        this.setLobby(lobby);
+        return lobby;
+    }
+
+    public void addToSpectatingList(Lobby lobby, User user) {
+        if(lobby.getLobbyGame().getSpectatingList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
+            return;
+
+        lobby.getLobbyGame().getSpectatingList().add(user);
+    }
+
+    public void autoAssignHost(Lobby lobby) {
+        if(ObjectUtils.isEmpty(lobby.getLobbyGame().getHost())) {
+            Optional<User> user = lobby.getLobbyGame().getSpectatingList().stream().findAny();
+            if(user.isPresent())
+                lobby.getLobbyGame().setHost(user.get());
+        }
+    }
+
+    
+
+    // extra function
 
     public List<String> getLobbyIdList() {
         String key = String.format("%s.%s", HASH_KEY, "lobbies");
@@ -127,4 +168,6 @@ public class LobbyService {
 
         return user;
     }
+
+
 }
