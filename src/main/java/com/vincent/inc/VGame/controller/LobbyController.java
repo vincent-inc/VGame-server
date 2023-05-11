@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.service.LobbyService;
-import com.vincent.inc.VGame.util.HttpResponseThrowers;
+import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
 
 @RestController
 @RequestMapping("lobbies")

@@ -1,4 +1,4 @@
-package com.vincent.inc.VGame.util;
+package com.vincent.inc.VGame.util.Http;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

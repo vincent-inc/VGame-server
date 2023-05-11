@@ -17,8 +17,8 @@ import com.google.gson.Gson;
 import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.authenticator.User;
 import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
-import com.vincent.inc.VGame.util.HttpResponseThrowers;
 import com.vincent.inc.VGame.util.Sha256PasswordEncoder;
+import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
 
 @Service
 public class LobbyService {
