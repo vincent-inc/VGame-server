@@ -72,6 +72,11 @@ public class LobbyService {
         this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
     }
 
+    public void removeLobby(String lobbyId) {
+        String key = String.format("%s.%s", HASH_KEY, lobbyId);
+        this.redisTemplate.delete(key);
+    }
+
     public Lobby createLobby(Lobby lobby, int userId) {
         List<String> lobbyList = this.getLobbyIdList();
         User user = this.getUserWithMask(userId);
@@ -123,7 +128,16 @@ public class LobbyService {
         }
     }
 
-    
+    public boolean isHost(Lobby lobby, User user) {
+        return lobby.getLobbyGame().getHost().getId() == user.getId();
+    }
+
+    public void deleteLobby(String lobbyId, int userId) {
+        User user = this.getUserWithMask(userId);
+        Lobby lobby = this.getLobby(lobbyId);
+        if(isHost(lobby, user))
+            this.removeLobby(lobbyId);
+    }
 
     // extra function
 

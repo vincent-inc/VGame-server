@@ -3,6 +3,7 @@ package com.vincent.inc.VGame.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,5 +40,10 @@ public class LobbyController {
     @PostMapping("join/{id}")
     public Lobby createLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId) {
         return this.lobbyService.joinLobby(lobbyId, userId);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId) {
+        this.lobbyService.deleteLobby(lobbyId, userId);
     }
 }
