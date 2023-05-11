@@ -154,6 +154,7 @@ public class LobbyService {
 
         lobby.getLobbyGame().getPlayerList().add(user);
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
+        this.autoAssignHost(lobby);
     }
 
     public void addToSpectatingList(Lobby lobby, User user) {
