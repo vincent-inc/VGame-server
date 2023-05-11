@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -121,7 +123,8 @@ public class LobbyService {
         User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
 
-        lobby.getLobbyGame().getSpectatingList().remove(user);
+        lobby.getLobbyGame().setSpectatingList(lobby.getLobbyGame().getSpectatingList().stream().filter(u -> u.getId() != userId).collect(Collectors.toList()));
+        
         if(isHost(lobby, user)) {
             lobby.getLobbyGame().setHost(null);
             this.autoAssignHost(lobby);
