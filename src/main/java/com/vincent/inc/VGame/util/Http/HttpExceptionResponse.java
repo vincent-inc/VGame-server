@@ -1,6 +1,5 @@
 package com.vincent.inc.VGame.util.Http;
 
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.AllArgsConstructor;
@@ -18,4 +17,5 @@ public class HttpExceptionResponse {
         this. message = ex.getMessage();
         this.status = new HttpStatus(ex.getStatusCode());
     }
+
 }
