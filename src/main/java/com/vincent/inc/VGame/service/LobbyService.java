@@ -108,9 +108,33 @@ public class LobbyService {
     public Lobby joinLobby(String lobbyId, int userId) {
         User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
+
+        if(lobby.getCurrentNumberOfPlayer() > lobby.getMaxPlayer())
+            HttpResponseThrowers.throwBadRequest("Max player reach");
+
         addToSpectatingList(lobby, user);
         this.setLobby(lobby);
         return lobby;
+    }
+
+    public Lobby leaveLobby(String lobbyId, int userId) {
+        User user = this.getUserWithMask(userId);
+        Lobby lobby = this.getLobby(lobbyId);
+
+        lobby.getLobbyGame().getSpectatingList().remove(user);
+        if(isHost(lobby, user)) {
+            lobby.getLobbyGame().setHost(null);
+            this.autoAssignHost(lobby);
+        }
+
+        lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() - 1);
+        
+        this.setLobby(lobby);
+        return lobby;
+    }
+
+    public void autoCountPlayer(Lobby lobby, User user) {
+
     }
 
     public void addToSpectatingList(Lobby lobby, User user) {
@@ -118,6 +142,7 @@ public class LobbyService {
             return;
 
         lobby.getLobbyGame().getSpectatingList().add(user);
+        lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
     }
 
     public void autoAssignHost(Lobby lobby) {

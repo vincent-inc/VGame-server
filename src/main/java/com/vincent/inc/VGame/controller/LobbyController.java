@@ -42,6 +42,11 @@ public class LobbyController {
         return this.lobbyService.joinLobby(lobbyId, userId);
     }
 
+    @PostMapping("leave/{id}")
+    public Lobby leaveLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId) {
+        return this.lobbyService.leaveLobby(lobbyId, userId);
+    }
+
     @DeleteMapping("{id}")
     public void deleteLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId) {
         this.lobbyService.deleteLobby(lobbyId, userId);
