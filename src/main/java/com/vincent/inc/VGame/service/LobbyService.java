@@ -1,11 +1,12 @@
 package com.vincent.inc.VGame.service;
 
 import java.time.Duration;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,9 @@ public class LobbyService {
 
     public static final String HASH_KEY = "com.vincent.inc.VGame.service.LobbyService";
 
-    private int lobbyTTL = 3000;
+    private final int lobbyTTL = 3000; //3000s
+
+    private final int checkInOffset = 5; // 5s
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -66,7 +69,27 @@ public class LobbyService {
             return (Lobby) HttpResponseThrowers.throwBadRequest("Lobby does not exist");
         }
 
-        return this.gson.fromJson(lobby, Lobby.class);
+        Lobby lobbyO = this.gson.fromJson(lobby, Lobby.class);
+
+        return lobbyO;
+    }
+
+    public Lobby getLobby(String lobbyId, int userId) {
+        String key = String.format("%s.%s", HASH_KEY, lobbyId);
+        String lobby = this.redisTemplate.opsForValue().getAndExpire(key, Duration.ofSeconds(lobbyTTL));
+
+        if(lobby == null) 
+            return (Lobby) HttpResponseThrowers.throwBadRequest("Lobby does not exist");
+
+        Lobby lobbyO = this.gson.fromJson(lobby, Lobby.class);
+        
+        this.renewCheckIn(lobbyO, userId);
+
+        lobbyO = this.leaveOverdueUser(lobbyO);
+
+        this.setLobby(lobbyO);
+
+        return lobbyO;
     }
 
     public void setLobby(Lobby lobby) {
@@ -182,6 +205,47 @@ public class LobbyService {
         Lobby lobby = this.getLobby(lobbyId);
         if(isHost(lobby, user))
             this.removeLobby(lobbyId);
+    }
+
+    public Lobby renewCheckIn(Lobby lobby, int userId) {
+        LocalTime now = LocalTime.now(ZoneId.systemDefault());
+
+        if(lobby.getLobbyGame().getHost().getId() == userId)
+            lobby.getLobbyGame().getHost().setLastCheckInTime(now);
+
+        lobby.getLobbyGame().getPlayerList().parallelStream().forEach(u -> {
+            if(u.getId() == userId)
+                u.setLastCheckInTime(now);
+        });
+
+        return lobby;
+    }
+
+    public Lobby leaveOverdueUser(Lobby lobby) {
+        LocalTime now = LocalTime.now(ZoneId.systemDefault());
+
+        // User host = lobby.getLobbyGame().getHost();
+        // if(ObjectUtils.isEmpty(host) && isPassCheckInTime(host, now)) {
+        //     this.leaveLobby(lobby.getId(), host.getId());
+        //     leaveOverdueUser(lobby);
+        //     return;
+        // }
+
+        // lobby.getLobbyGame().setPlayerList(lobby.getLobbyGame().getPlayerList().stream().filter(u -> this.isPassCheckInTime(u, now)).collect(Collectors.toList()));
+        
+        List<User> players = lobby.getLobbyGame().getPlayerList();
+        for(int count = players.size() - 1; count >= 0; count --) {
+            User player = players.get(count);
+            if(this.isPassCheckInTime(player, now))
+                this.leaveLobby(lobby.getId(), player.getId());
+        }
+
+        return lobby;
+    }
+
+    public boolean isPassCheckInTime(User user, LocalTime now) {
+        
+        return now.minusSeconds(checkInOffset).isAfter(user.getLastCheckInTime());
     }
 
     // extra function

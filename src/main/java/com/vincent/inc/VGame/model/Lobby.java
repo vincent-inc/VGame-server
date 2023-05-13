@@ -3,10 +3,8 @@ package com.vincent.inc.VGame.model;
 import com.vincent.inc.VGame.model.Battleship.BattleshipGame;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
 @AllArgsConstructor
 public class Lobby {

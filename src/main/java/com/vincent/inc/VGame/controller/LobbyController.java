@@ -33,7 +33,7 @@ public class LobbyController {
         if(!this.lobbyService.isInLobby(lobbyId, userId))
             return (Lobby) HttpResponseThrowers.throwBadRequest("user does not belong to lobby");
 
-        return this.lobbyService.getLobby(lobbyId);
+        return this.lobbyService.getLobby(lobbyId, userId);
     }
 
     @PostMapping()
