@@ -102,11 +102,8 @@ public class LobbyService {
         this.redisTemplate.delete(key);
     }
 
-    public Lobby createLobby(Lobby lobby, int userId) {
+    public Lobby createLobby(Lobby lobby) {
         List<String> lobbyList = this.getLobbyIdList();
-        User user = this.getUserWithMask(userId);
-        if(user == null)
-            HttpResponseThrowers.throwBadRequest("User not found"); 
 
         do {
             String uuid = UUID.randomUUID().toString();
@@ -115,8 +112,6 @@ public class LobbyService {
         while(lobbyList.parallelStream().anyMatch(e -> e.equals(lobby.getId())));
 
         String key = String.format("%s.%s", HASH_KEY, lobby.getId());
-
-        lobby.getLobbyGame().setHost(user);
 
         if(!ObjectUtils.isEmpty(lobby.getPassword()))
             lobby.setPassword(this.sha256PasswordEncoder.encode(lobby.getPassword()));

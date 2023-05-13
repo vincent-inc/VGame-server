@@ -37,8 +37,8 @@ public class LobbyController {
     }
 
     @PostMapping()
-    public Lobby createLobby(@RequestHeader("user_id") int userId, @RequestBody Lobby lobby) {
-        return this.lobbyService.createLobby(lobby, userId);
+    public Lobby createLobby(@RequestBody Lobby lobby) {
+        return this.lobbyService.createLobby(lobby);
     }
 
     @PostMapping("join/{id}")
