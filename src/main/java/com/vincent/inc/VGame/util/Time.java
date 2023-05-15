@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class Time {
     public static final int MAX_MONTH = 12;
     public static final int MAX_HOURS = 24;
@@ -122,5 +124,26 @@ public class Time {
             this.increaseMinute(this.second / MAX_SECOND);
             this.second = this.second % MAX_SECOND;
         }
+    }
+
+    public void increaseTime(Time time) {
+        this.increaseYear(time.getYear());
+        this.increaseMonth(time.getMonth());
+        this.increaseDay(this.getDay());
+        this.increaseHours(this.getHours());
+        this.increaseMinute(this.getMinute());
+        this.increaseSecond(this.getSecond());
+    }
+
+    public String toSpring() {
+        return String.format("%s | %s", this.getDate(), this.getTime());
+    }
+
+    public String getDate() {
+        return String.format("%s/%s/%s", this.month, this.day, this.year);
+    }
+
+    public String getTime() {
+        return String.format("%s-%s-%s", this.hours, this.minute, this.second);
     }
 }
