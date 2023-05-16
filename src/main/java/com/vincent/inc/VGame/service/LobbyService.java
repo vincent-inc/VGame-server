@@ -275,12 +275,7 @@ public class LobbyService {
     private User getUserWithMask(int userId) {
         User user = this.authenticatorClient.getById(userId);
         user.setPassword(null);
-        user.getUserProfile().setAddress(null);
-        user.getUserProfile().setCity(null);
         user.getUserProfile().setEmail(null);
-        user.getUserProfile().setPhoneNumber(null);
-        user.getUserProfile().setState(null);
-        user.getUserProfile().setZip(null);
 
         return user;
     }
