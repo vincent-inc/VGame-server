@@ -107,7 +107,7 @@ public class Time {
 
     public Time increaseHours(int hours) {
         this.hours += hours;
-        if(this.hours > MAX_HOURS) {
+        if(this.hours >= MAX_HOURS) {
             this.increaseDay(this.hours / MAX_HOURS);
             this.hours = this.hours % MAX_HOURS;
         }
@@ -116,7 +116,7 @@ public class Time {
 
     public Time increaseMinute(int minute) {
         this.minute += minute;
-        if(this.minute > MAX_MINUTE) {
+        if(this.minute >= MAX_MINUTE) {
             this.increaseHours(this.minute / MAX_MINUTE);
             this.minute = this.minute % MAX_MINUTE;
         }
@@ -125,7 +125,7 @@ public class Time {
 
     public Time increaseSecond(int second) {
         this.second += second;
-        if(this.second > MAX_SECOND) {
+        if(this.second >= MAX_SECOND) {
             this.increaseMinute(this.second / MAX_SECOND);
             this.second = this.second % MAX_SECOND;
         }
