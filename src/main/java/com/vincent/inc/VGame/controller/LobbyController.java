@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vincent.inc.VGame.model.Lobby;
+import com.vincent.inc.VGame.model.chat.Message;
 import com.vincent.inc.VGame.service.LobbyService;
 import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
 
@@ -49,6 +50,11 @@ public class LobbyController {
     @PostMapping("leave/{id}")
     public Lobby leaveLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId) {
         return this.lobbyService.leaveLobby(lobbyId, userId);
+    }
+
+    @PostMapping("chat/{id}")
+    public Lobby chat(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody Message message) {
+        return this.lobbyService.sendMessage(lobbyId, userId, message);
     }
 
     @DeleteMapping("{id}")

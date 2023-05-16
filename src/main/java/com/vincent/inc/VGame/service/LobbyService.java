@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import com.google.gson.Gson;
 import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.authenticator.User;
+import com.vincent.inc.VGame.model.chat.Message;
 import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
 import com.vincent.inc.VGame.util.Sha256PasswordEncoder;
 import com.vincent.inc.VGame.util.Time;
@@ -86,12 +87,12 @@ public class LobbyService {
 
         lobbyO = this.leaveOverdueUser(lobbyO);
 
-        this.setLobby(lobbyO);
+        this.saveLobby(lobbyO);
 
         return lobbyO;
     }
 
-    public void setLobby(Lobby lobby) {
+    public void saveLobby(Lobby lobby) {
         String key = String.format("%s.%s", HASH_KEY, lobby.getId());
         this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
     }
@@ -132,7 +133,7 @@ public class LobbyService {
             HttpResponseThrowers.throwBadRequest("Max player reach");
 
         addToPlayerList(lobby, user);
-        this.setLobby(lobby);
+        this.saveLobby(lobby);
         return lobby;
     }
 
@@ -149,7 +150,7 @@ public class LobbyService {
 
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() - 1);
         
-        this.setLobby(lobby);
+        this.saveLobby(lobby);
         return lobby;
     }
 
@@ -241,6 +242,20 @@ public class LobbyService {
         return user.getLastCheckInTime().increaseSecond(checkInOffset).isBefore(now);
     }
 
+    //Chatting
+
+    public Lobby sendMessage(String lobbyId, int userId, Message message) {
+        message.setTime(new Time());
+        message.setSendBy(this.getUserAlias(this.getUserWithMask(userId)));
+        Lobby lobby = this.getLobby(lobbyId);
+        if(ObjectUtils.isEmpty(lobby.getMessages()))
+            lobby.setMessages(new ArrayList<>());
+
+        lobby.getMessages().add(message);
+        this.saveLobby(lobby);
+        return lobby;
+    }
+
     // extra function
 
     public List<String> getLobbyIdList() {
@@ -280,5 +295,10 @@ public class LobbyService {
         return user;
     }
 
-
+    private String getUserAlias(User user) {
+        if(!ObjectUtils.isEmpty(user.getUserProfile().getAlias()))
+            return user.getUserProfile().getAlias();
+        
+        return user.getUsername();
+    }
 }

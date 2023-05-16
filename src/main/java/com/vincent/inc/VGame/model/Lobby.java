@@ -1,6 +1,10 @@
 package com.vincent.inc.VGame.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vincent.inc.VGame.model.Battleship.BattleshipGame;
+import com.vincent.inc.VGame.model.chat.Message;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,9 +29,12 @@ public class Lobby {
     private LobbyGame lobbyGame;
 
     private BattleshipGame battleshipGame;
+
+    private List<Message> messages;
     
     public Lobby() {
         this.lobbyGame = new LobbyGame();
         this.battleshipGame = new BattleshipGame();
+        messages = new ArrayList<>();
     }
 }
