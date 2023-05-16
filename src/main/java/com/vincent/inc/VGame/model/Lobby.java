@@ -25,7 +25,7 @@ public class Lobby {
     private LobbyGame lobbyGame;
 
     private BattleshipGame battleshipGame;
-
+    
     public Lobby() {
         this.lobbyGame = new LobbyGame();
         this.battleshipGame = new BattleshipGame();

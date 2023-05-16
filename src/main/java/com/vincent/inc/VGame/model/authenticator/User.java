@@ -1,7 +1,8 @@
 package com.vincent.inc.VGame.model.authenticator;
 
-import java.time.LocalTime;
 import java.util.List;
+
+import com.vincent.inc.VGame.util.Time;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,5 @@ public class User
 
     private List<Role> userRoles;
 
-    private LocalTime lastCheckInTime;
+    private Time lastCheckInTime;
 }

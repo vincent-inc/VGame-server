@@ -27,7 +27,7 @@ public class VGameApplication {
 	public ModelAndView redirectSwagger(ModelMap model) {
 		return new ModelAndView("redirect:/swagger-ui/index.html", model);
 	}
-
+	
 	@GetMapping("/_status/healthz")
 	public String healthCheck() {
 		return String.format("VGame %s is up and running", env);

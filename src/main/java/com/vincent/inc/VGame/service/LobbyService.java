@@ -1,9 +1,6 @@
 package com.vincent.inc.VGame.service;
 
-import java.sql.Time;
 import java.time.Duration;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +17,7 @@ import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.authenticator.User;
 import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
 import com.vincent.inc.VGame.util.Sha256PasswordEncoder;
+import com.vincent.inc.VGame.util.Time;
 import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
 
 @Service
@@ -204,7 +202,7 @@ public class LobbyService {
     }
 
     public Lobby renewCheckIn(Lobby lobby, int userId) {
-        LocalTime now = LocalTime.now(ZoneId.systemDefault());
+        Time now = new Time();
 
         if(lobby.getLobbyGame().getHost().getId() == userId)
             lobby.getLobbyGame().getHost().setLastCheckInTime(now);
@@ -218,7 +216,7 @@ public class LobbyService {
     }
 
     public Lobby leaveOverdueUser(Lobby lobby) {
-        LocalTime now = LocalTime.now(ZoneId.systemDefault());
+        Time now = new Time();
 
         // User host = lobby.getLobbyGame().getHost();
         // if(ObjectUtils.isEmpty(host) && isPassCheckInTime(host, now)) {
@@ -239,9 +237,8 @@ public class LobbyService {
         return lobby;
     }
 
-    public boolean isPassCheckInTime(User user, LocalTime now) {
-        
-        return now.minusSeconds(checkInOffset).isAfter(user.getLastCheckInTime());
+    public boolean isPassCheckInTime(User user, Time now) {
+        return user.getLastCheckInTime().increaseSecond(checkInOffset).isBefore(now);
     }
 
     // extra function
