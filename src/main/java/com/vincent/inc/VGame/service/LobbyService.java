@@ -17,6 +17,7 @@ import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.authenticator.User;
 import com.vincent.inc.VGame.model.chat.Message;
 import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
+import com.vincent.inc.VGame.util.ReflectionUtils;
 import com.vincent.inc.VGame.util.Sha256PasswordEncoder;
 import com.vincent.inc.VGame.util.Time;
 import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
@@ -96,9 +97,10 @@ public class LobbyService {
         return lobbyO;
     }
 
-    public void saveLobby(Lobby lobby) {
+    public Lobby saveLobby(Lobby lobby) {
         String key = String.format("%s.%s", HASH_KEY, lobby.getId());
         this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
+        return lobby;
     }
 
     public void removeLobby(String lobbyId) {
@@ -137,8 +139,8 @@ public class LobbyService {
             HttpResponseThrowers.throwBadRequest("Max player reach");
 
         addToPlayerList(lobby, user);
-        this.saveLobby(lobby);
-        return lobby;
+        
+        return this.saveLobby(lobby);
     }
 
     public Lobby leaveLobby(String lobbyId, int userId) {
@@ -262,6 +264,19 @@ public class LobbyService {
 
         this.saveLobby(lobby);
         return lobby;
+    }
+
+    //usual operation
+
+    public Lobby patchLobby(String id, int userId, Lobby lobby) {
+        User user = this.getUserWithMask(userId);
+        Lobby oldLobby = this.getLobby(id);
+        if(oldLobby.getLobbyGame().getHost().getId() != user.getId())
+            return (Lobby) HttpResponseThrowers.throwBadRequest("User is not lobby host");
+
+        ReflectionUtils.patchValue(oldLobby, lobby);
+
+        return this.saveLobby(oldLobby);
     }
 
     // extra function

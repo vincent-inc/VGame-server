@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,6 +56,11 @@ public class LobbyController {
     @PostMapping("chat/{id}")
     public Lobby chat(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody Message message) {
         return this.lobbyService.sendMessage(lobbyId, userId, message);
+    }
+
+    @PatchMapping("{id}")
+    public Lobby patchLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody Lobby lobby) {
+        return this.lobbyService.patchLobby(lobbyId, userId, lobby);
     }
 
     @DeleteMapping("{id}")
