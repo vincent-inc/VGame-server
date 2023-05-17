@@ -55,7 +55,7 @@ public class LobbyService {
                 continue;
             }
 
-            lobbies.add(this.gson.fromJson(lobby, Lobby.class));
+            lobbies.add(this.maskLobby(this.gson.fromJson(lobby, Lobby.class)));
         }
 
         return lobbies;
@@ -293,6 +293,16 @@ public class LobbyService {
         user.getUserProfile().setEmail(null);
 
         return user;
+    }
+
+    private Lobby maskLobby(Lobby lobby) {
+        lobby.setMessages(null);
+        return lobby;
+    }
+
+    private Lobby getLobbyWithMask(String lobbyId) {
+        Lobby lobby = this.getLobby(lobbyId);
+        return maskLobby(lobby);
     }
 
     private String getUserAlias(User user) {
