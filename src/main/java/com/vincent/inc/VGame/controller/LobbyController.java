@@ -3,6 +3,7 @@ package com.vincent.inc.VGame.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -45,8 +46,10 @@ public class LobbyController {
     }
 
     @PostMapping("join/{id}")
-    public Lobby createLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody(required = false) PasswordPojo password) {
-        if(this.lobbyService.isCorrectPassword(lobbyId, password.getPassword()))
+    public Lobby joinLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody(required = false) PasswordPojo password) {
+        String tempPassword = ObjectUtils.isEmpty(password) ? "" : password.getPassword();
+
+        if(this.lobbyService.isCorrectPassword(lobbyId, tempPassword))
             return (Lobby) HttpResponseThrowers.throwBadRequest("Wrong lobby password");
         
         return this.lobbyService.joinLobby(lobbyId, userId);
