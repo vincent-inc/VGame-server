@@ -139,6 +139,8 @@ public class LobbyService {
             HttpResponseThrowers.throwBadRequest("Max player reach");
 
         addToPlayerList(lobby, user);
+
+        this.autoCountPlayer(lobby);
         
         return this.saveLobby(lobby);
     }
@@ -155,13 +157,15 @@ public class LobbyService {
         }
 
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() - 1);
+
+        this.autoCountPlayer(lobby);
         
-        this.saveLobby(lobby);
-        return lobby;
+        return this.saveLobby(lobby);
     }
 
-    public void autoCountPlayer(Lobby lobby, User user) {
-        
+    public void autoCountPlayer(Lobby lobby) {
+        int numberOfPlayer = lobby.getLobbyInfo().getPlayerList().size();
+        lobby.setCurrentNumberOfPlayer(numberOfPlayer);
     }
 
     public boolean isInLobby(Lobby lobby, int userId) {
