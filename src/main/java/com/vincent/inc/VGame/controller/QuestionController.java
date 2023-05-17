@@ -21,7 +21,7 @@ import jakarta.ws.rs.QueryParam;
 import io.swagger.v3.oas.annotations.Operation;
 
 import com.vincent.inc.VGame.model.questionnaire.Question;
-import com.vincent.inc.VGame.service.questionnaire.QuestionService;
+import com.vincent.inc.VGame.service.QuestionService;
 import com.vincent.inc.VGame.util.splunk.Splunk;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.vincent.inc.VGame.service.questionnaire;
+package com.vincent.inc.VGame.service;
 
 import java.util.List;
 import java.util.Optional;
