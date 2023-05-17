@@ -26,9 +26,13 @@ public class LobbyService {
 
     public static final String HASH_KEY = "com.vincent.inc.VGame.service.LobbyService";
 
+    private static final int MAX_MESSAGE = 50;
+
     private final int lobbyTTL = 3000; //3000s
 
     private final int checkInOffset = 5; // 5s
+
+    
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -252,6 +256,10 @@ public class LobbyService {
             lobby.setMessages(new ArrayList<>());
 
         lobby.getMessages().add(message);
+
+        while(lobby.getMessages().size() > MAX_MESSAGE)
+            lobby.getMessages().remove(0);
+
         this.saveLobby(lobby);
         return lobby;
     }
