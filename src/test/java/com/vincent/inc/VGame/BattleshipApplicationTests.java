@@ -24,7 +24,7 @@ class BattleshipApplicationTests {
 		Time time1 = new Time();
 		Time time2 = new Time();
 		time1.increaseSecond(5);
-		time2.increaseSecond(4);
+		time2.increaseSecond(6);
 		assertTrue(time1.isBefore(time2));
 	}
 
