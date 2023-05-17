@@ -1,4 +1,4 @@
-package com.vincent.inc.VGame.controller.questionnaire;
+package com.vincent.inc.VGame.controller;
 
 import java.util.List;
 
