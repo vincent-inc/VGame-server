@@ -108,29 +108,6 @@ public class LobbyService {
         this.redisTemplate.delete(key);
     }
 
-    public Lobby createLobby(Lobby lobby) {
-        List<String> lobbyList = this.getLobbyIdList();
-
-        do {
-            String uuid = UUID.randomUUID().toString();
-            lobby.setId(uuid);
-        }
-        while(lobbyList.parallelStream().anyMatch(e -> e.equals(lobby.getId())));
-
-        String key = String.format("%s.%s", HASH_KEY, lobby.getId());
-
-        if(!ObjectUtils.isEmpty(lobby.getPassword()))
-            lobby.setPassword(this.sha256PasswordEncoder.encode(lobby.getPassword()));
-        
-        this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
-
-        key = String.format("%s.%s", HASH_KEY, "lobbies");
-
-        this.pushLobbyIdList(lobby);
-
-        return lobby;
-    }
-
     public Lobby joinLobby(String lobbyId, int userId) {
         User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
@@ -205,6 +182,15 @@ public class LobbyService {
         return lobby.getLobbyInfo().getHost().getId() == user.getId();
     }
 
+    public boolean isCorrectPassword(String lobbyId, String password) {
+        Lobby lobby = this.getLobby(lobbyId);
+        if(!ObjectUtils.isEmpty(lobby.getPassword())) {
+            return this.sha256PasswordEncoder.matches(password, lobby.getPassword());
+        }
+        
+        return true;
+    }
+
     public void deleteLobby(String lobbyId, int userId) {
         User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
@@ -272,13 +258,38 @@ public class LobbyService {
 
     //usual operation
 
-    public Lobby patchLobby(String id, int userId, Lobby lobby) {
+    public Lobby createLobby(Lobby lobby) {
+        List<String> lobbyList = this.getLobbyIdList();
+
+        do {
+            String uuid = UUID.randomUUID().toString();
+            lobby.setId(uuid);
+        }
+        while(lobbyList.parallelStream().anyMatch(e -> e.equals(lobby.getId())));
+
+        String key = String.format("%s.%s", HASH_KEY, lobby.getId());
+
+        lobby.setPassword(this.encodePassword(lobby.getPassword()));
+        
+        this.redisTemplate.opsForValue().set(key, this.gson.toJson(lobby), Duration.ofSeconds(lobbyTTL));
+
+        key = String.format("%s.%s", HASH_KEY, "lobbies");
+
+        this.pushLobbyIdList(lobby);
+
+        return lobby;
+    }
+
+    public Lobby  patchLobby(String id, int userId, Lobby lobby) {
         User user = this.getUserWithMask(userId);
         Lobby oldLobby = this.getLobby(id);
+        String oldPassword = oldLobby.getPassword();
+        String newPassword = lobby.getPassword();
         if(oldLobby.getLobbyInfo().getHost().getId() != user.getId())
             return (Lobby) HttpResponseThrowers.throwBadRequest("User is not lobby host");
 
         ReflectionUtils.patchValue(oldLobby, lobby);
+        oldLobby.setPassword(this.encodePassword(oldPassword, newPassword));
 
         return this.saveLobby(oldLobby);
     }
@@ -295,6 +306,23 @@ public class LobbyService {
         this.redisTemplate.expire(key, Duration.ofSeconds(this.lobbyTTL * 10));
 
         return list;
+    }
+
+    public String encodePassword(String password) {
+        if(!ObjectUtils.isEmpty(password))
+            password = this.sha256PasswordEncoder.encode(password);
+        else {
+            password = "";
+        }
+
+        return password;
+    }
+
+    public String encodePassword(String oldPassword, String newPassword) {
+        if(!ObjectUtils.isEmpty(newPassword) && !this.sha256PasswordEncoder.matches(newPassword, oldPassword))
+            oldPassword = this.sha256PasswordEncoder.encode(newPassword);
+
+        return oldPassword;
     }
 
     private void pushLobbyIdList(Lobby lobby) {
