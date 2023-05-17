@@ -12,12 +12,12 @@ import lombok.Data;
 @Builder
 @Data
 @AllArgsConstructor
-public class LobbyGame {
+public class LobbyInfo {
     private User host;
     private List<User> playerList;
     private List<User> spectatingList;
 
-    public LobbyGame() {
+    public LobbyInfo() {
         this.playerList = new ArrayList<>();
         this.spectatingList = new ArrayList<>();
     }

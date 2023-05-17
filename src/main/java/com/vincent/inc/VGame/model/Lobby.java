@@ -26,14 +26,14 @@ public class Lobby {
 
     private int maxPlayer = 2;
 
-    private LobbyGame lobbyGame;
+    private LobbyInfo lobbyInfo;
 
     private BattleshipGame battleshipGame;
 
     private List<Message> messages;
     
     public Lobby() {
-        this.lobbyGame = new LobbyGame();
+        this.lobbyInfo = new LobbyInfo();
         this.battleshipGame = new BattleshipGame();
         messages = new ArrayList<>();
     }

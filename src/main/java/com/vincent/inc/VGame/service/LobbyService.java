@@ -147,10 +147,10 @@ public class LobbyService {
         User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
 
-        lobby.getLobbyGame().setPlayerList(lobby.getLobbyGame().getPlayerList().stream().filter(u -> u.getId() != userId).collect(Collectors.toList()));
+        lobby.getLobbyInfo().setPlayerList(lobby.getLobbyInfo().getPlayerList().stream().filter(u -> u.getId() != userId).collect(Collectors.toList()));
         
         if(isHost(lobby, user)) {
-            lobby.getLobbyGame().setHost(null);
+            lobby.getLobbyInfo().setHost(null);
             this.autoAssignHost(lobby);
         }
 
@@ -165,7 +165,7 @@ public class LobbyService {
     }
 
     public boolean isInLobby(Lobby lobby, int userId) {
-        return lobby.getLobbyGame().getPlayerList().parallelStream().anyMatch(u -> u.getId() == userId);
+        return lobby.getLobbyInfo().getPlayerList().parallelStream().anyMatch(u -> u.getId() == userId);
     }
 
     public boolean isInLobby(String lobbyId, int userId) {
@@ -173,32 +173,32 @@ public class LobbyService {
     }
 
     public void addToPlayerList(Lobby lobby, User user) {
-        if(lobby.getLobbyGame().getPlayerList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
+        if(lobby.getLobbyInfo().getPlayerList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
             return;
 
-        lobby.getLobbyGame().getPlayerList().add(user);
+        lobby.getLobbyInfo().getPlayerList().add(user);
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
         this.autoAssignHost(lobby);
     }
 
     public void addToSpectatingList(Lobby lobby, User user) {
-        if(lobby.getLobbyGame().getSpectatingList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
+        if(lobby.getLobbyInfo().getSpectatingList().parallelStream().anyMatch(u -> u.getId() == user.getId()))
             return;
 
-        lobby.getLobbyGame().getSpectatingList().add(user);
+        lobby.getLobbyInfo().getSpectatingList().add(user);
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
     }
 
     public void autoAssignHost(Lobby lobby) {
-        if(ObjectUtils.isEmpty(lobby.getLobbyGame().getHost())) {
-            Optional<User> user = lobby.getLobbyGame().getPlayerList().stream().findAny();
+        if(ObjectUtils.isEmpty(lobby.getLobbyInfo().getHost())) {
+            Optional<User> user = lobby.getLobbyInfo().getPlayerList().stream().findAny();
             if(user.isPresent())
-                lobby.getLobbyGame().setHost(user.get());
+                lobby.getLobbyInfo().setHost(user.get());
         }
     }
 
     public boolean isHost(Lobby lobby, User user) {
-        return lobby.getLobbyGame().getHost().getId() == user.getId();
+        return lobby.getLobbyInfo().getHost().getId() == user.getId();
     }
 
     public void deleteLobby(String lobbyId, int userId) {
@@ -211,10 +211,10 @@ public class LobbyService {
     public Lobby renewCheckIn(Lobby lobby, int userId) {
         Time now = new Time();
 
-        if(lobby.getLobbyGame().getHost().getId() == userId)
-            lobby.getLobbyGame().getHost().setLastCheckInTime(now);
+        if(lobby.getLobbyInfo().getHost().getId() == userId)
+            lobby.getLobbyInfo().getHost().setLastCheckInTime(now);
 
-        lobby.getLobbyGame().getPlayerList().parallelStream().forEach(u -> {
+        lobby.getLobbyInfo().getPlayerList().parallelStream().forEach(u -> {
             if(u.getId() == userId)
                 u.setLastCheckInTime(now);
         });
@@ -234,7 +234,7 @@ public class LobbyService {
 
         // lobby.getLobbyGame().setPlayerList(lobby.getLobbyGame().getPlayerList().stream().filter(u -> this.isPassCheckInTime(u, now)).collect(Collectors.toList()));
         
-        List<User> players = lobby.getLobbyGame().getPlayerList();
+        List<User> players = lobby.getLobbyInfo().getPlayerList();
         for(int count = players.size() - 1; count >= 0; count --) {
             User player = players.get(count);
             if(this.isPassCheckInTime(player, now))
@@ -271,7 +271,7 @@ public class LobbyService {
     public Lobby patchLobby(String id, int userId, Lobby lobby) {
         User user = this.getUserWithMask(userId);
         Lobby oldLobby = this.getLobby(id);
-        if(oldLobby.getLobbyGame().getHost().getId() != user.getId())
+        if(oldLobby.getLobbyInfo().getHost().getId() != user.getId())
             return (Lobby) HttpResponseThrowers.throwBadRequest("User is not lobby host");
 
         ReflectionUtils.patchValue(oldLobby, lobby);
