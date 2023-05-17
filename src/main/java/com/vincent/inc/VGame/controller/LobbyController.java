@@ -49,7 +49,7 @@ public class LobbyController {
     public Lobby joinLobby(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody(required = false) PasswordPojo password) {
         String tempPassword = ObjectUtils.isEmpty(password) ? "" : password.getPassword();
 
-        if(this.lobbyService.isCorrectPassword(lobbyId, tempPassword))
+        if(!this.lobbyService.isCorrectPassword(lobbyId, tempPassword))
             return (Lobby) HttpResponseThrowers.throwBadRequest("Wrong lobby password");
         
         return this.lobbyService.joinLobby(lobbyId, userId);
