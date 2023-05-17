@@ -321,6 +321,8 @@ public class LobbyService {
     public String encodePassword(String oldPassword, String newPassword) {
         if(!ObjectUtils.isEmpty(newPassword) && !this.sha256PasswordEncoder.matches(newPassword, oldPassword))
             oldPassword = this.sha256PasswordEncoder.encode(newPassword);
+        else
+            oldPassword = "";
 
         return oldPassword;
     }
