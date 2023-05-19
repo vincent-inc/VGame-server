@@ -33,8 +33,6 @@ public class LobbyService {
 
     private final int checkInOffset = 5; // 5s
 
-    
-
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -80,17 +78,11 @@ public class LobbyService {
     }
 
     public Lobby getLobby(String lobbyId, int userId) {
-        String key = String.format("%s.%s", HASH_KEY, lobbyId);
-        String lobby = this.redisTemplate.opsForValue().getAndExpire(key, Duration.ofSeconds(lobbyTTL));
-
-        if(lobby == null) 
-            return (Lobby) HttpResponseThrowers.throwBadRequest("Lobby does not exist");
-
-        Lobby lobbyO = this.gson.fromJson(lobby, Lobby.class);
+        Lobby lobby = this.getLobby(lobbyId);
         
-        this.renewCheckIn(lobbyO, userId);
+        lobby = this.renewCheckIn(lobby, userId);
 
-        return this.saveLobby(lobbyO);
+        return this.saveLobby(lobby);
     }
 
     public Lobby saveLobby(Lobby lobby) {
@@ -119,15 +111,9 @@ public class LobbyService {
     }
 
     public Lobby leaveLobby(String lobbyId, int userId) {
-        User user = this.getUserWithMask(userId);
         Lobby lobby = this.getLobby(lobbyId);
 
         lobby.getLobbyInfo().setPlayerList(lobby.getLobbyInfo().getPlayerList().stream().filter(u -> u.getId() != userId).collect(Collectors.toList()));
-        
-        if(isHost(lobby, user)) {
-            lobby.getLobbyInfo().setHost(null);
-            this.autoAssignHost(lobby);
-        }
 
         this.autoCountPlayer(lobby);
         
@@ -153,7 +139,6 @@ public class LobbyService {
 
         lobby.getLobbyInfo().getPlayerList().add(user);
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
-        this.autoAssignHost(lobby);
     }
 
     public void addToSpectatingList(Lobby lobby, User user) {
@@ -164,16 +149,12 @@ public class LobbyService {
         lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() + 1);
     }
 
-    public void autoAssignHost(Lobby lobby) {
-        if(ObjectUtils.isEmpty(lobby.getLobbyInfo().getHost())) {
-            Optional<User> user = lobby.getLobbyInfo().getPlayerList().stream().findAny();
-            if(user.isPresent())
-                lobby.getLobbyInfo().setHost(user.get());
-        }
+    public boolean isHost(Lobby lobby, User user) {
+        return lobby.getLobbyInfo().getPlayerList().get(0).getId() == user.getId();
     }
 
-    public boolean isHost(Lobby lobby, User user) {
-        return lobby.getLobbyInfo().getHost().getId() == user.getId();
+    public User getHost(Lobby lobby) {
+        return lobby.getLobbyInfo().getPlayerList().get(0);
     }
 
     public boolean isCorrectPassword(String lobbyId, String password) {
@@ -195,10 +176,7 @@ public class LobbyService {
     public Lobby renewCheckIn(Lobby lobby, int userId) {
         Time now = new Time();
 
-        if(lobby.getLobbyInfo().getHost().getId() == userId)
-            lobby.getLobbyInfo().getHost().setLastCheckInTime(now);
-
-        lobby.getLobbyInfo().getPlayerList().parallelStream().forEach(u -> {
+        lobby.getLobbyInfo().getPlayerList().stream().forEach(u -> {
             if(u.getId() == userId)
                 u.setLastCheckInTime(now);
         });
@@ -284,7 +262,7 @@ public class LobbyService {
         Lobby oldLobby = this.getLobby(id);
         String oldPassword = oldLobby.getPassword();
         String newPassword = lobby.getPassword();
-        if(oldLobby.getLobbyInfo().getHost().getId() != user.getId())
+        if(this.getHost(oldLobby).getId() != user.getId())
             return (Lobby) HttpResponseThrowers.throwBadRequest("User is not lobby host");
 
         ReflectionUtils.patchValue(oldLobby, lobby);

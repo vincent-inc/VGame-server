@@ -13,7 +13,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LobbyInfo {
-    private User host;
     private List<User> playerList;
     private List<User> spectatingList;
 
