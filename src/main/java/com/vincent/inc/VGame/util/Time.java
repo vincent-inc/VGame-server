@@ -2,6 +2,7 @@ package com.vincent.inc.VGame.util;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,8 @@ public class Time {
     public static final int MAX_MINUTE = 60;
     public static final int MAX_SECOND = 60;
 
+    public static final ZoneId DEFAULT_ZONE_ID = ZoneId.of("America/New_York");
+
     private int year;
     private int month;
     private int day;
@@ -24,8 +27,8 @@ public class Time {
     private int second;
 
     public Time() {
-        LocalDate localDate = LocalDate.now();
-        LocalTime localTime = LocalTime.now();
+        LocalDate localDate = LocalDate.now(DEFAULT_ZONE_ID);
+        LocalTime localTime = LocalTime.now(DEFAULT_ZONE_ID);
 
         this.month = localDate.getMonthValue();
         this.day = localDate.getDayOfMonth();
@@ -33,6 +36,26 @@ public class Time {
         this.hours = localTime.getHour();
         this.minute = localTime.getMinute();
         this.second = localTime.getSecond();
+    }
+
+    public Time(ZoneId zoneId) {
+        LocalDate localDate = LocalDate.now(zoneId);
+        LocalTime localTime = LocalTime.now(zoneId);
+
+        this.month = localDate.getMonthValue();
+        this.day = localDate.getDayOfMonth();
+        this.year = localDate.getYear();
+        this.hours = localTime.getHour();
+        this.minute = localTime.getMinute();
+        this.second = localTime.getSecond();
+    }
+
+    public static Time now() {
+        return new Time();
+    }
+
+    public static Time now(ZoneId zoneId) {
+        return new Time(zoneId);
     }
 
     public LocalDate toLocalDate() {
