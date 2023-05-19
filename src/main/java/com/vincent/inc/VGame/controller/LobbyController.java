@@ -29,7 +29,7 @@ public class LobbyController {
 
     @GetMapping()
     public List<Lobby> getLobbies() {
-        return this.lobbyService.getAll();
+        return this.lobbyService.getAllWithMask();
     }
 
     @GetMapping("{id}")

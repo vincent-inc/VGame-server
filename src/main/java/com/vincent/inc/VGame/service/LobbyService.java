@@ -31,7 +31,7 @@ public class LobbyService {
 
     private final int lobbyTTL = 3000; //3000s
 
-    private final int checkInOffset = 5; // 5s
+    private final int CHECK_IN_OFFSET = 5; // 5s
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -44,6 +44,25 @@ public class LobbyService {
 
     @Autowired
     private Gson gson;
+
+    public List<Lobby> getAllWithMask() {
+        List<Lobby> lobbies = new ArrayList<>();
+        List<String> lobbyList = this.getLobbyIdList();
+
+        for (int i = 0; i < lobbyList.size(); i++) {
+            String key = String.format("%s.%s", HASH_KEY, lobbyList.get(i));
+            String lobby = this.redisTemplate.opsForValue().get(key);
+
+            if(lobby == null) {
+                this.removeLobbyIndex(i);
+                continue;
+            }
+
+            lobbies.add(this.maskLobby(this.gson.fromJson(lobby, Lobby.class)));
+        }
+
+        return lobbies;
+    }
 
     public List<Lobby> getAll() {
         List<Lobby> lobbies = new ArrayList<>();
@@ -58,7 +77,7 @@ public class LobbyService {
                 continue;
             }
 
-            lobbies.add(this.maskLobby(this.gson.fromJson(lobby, Lobby.class)));
+            lobbies.add(this.gson.fromJson(lobby, Lobby.class));
         }
 
         return lobbies;
@@ -199,20 +218,18 @@ public class LobbyService {
         List<User> players = lobby.getLobbyInfo().getPlayerList();
         for(int count = players.size() - 1; count >= 0; count --) {
             User player = players.get(count);
-            if(this.isPassCheckInTime(player, now))
+            if(this.isPassCheckInTime(player, now)) {
                 this.leaveLobby(lobby.getId(), player.getId());
+            }
         }
 
         return lobby;
     }
 
     public boolean isPassCheckInTime(User user, Time now) {
-        var userTime = user.getLastCheckInTime();
-        var isAfter = userTime.isAfter(now);
-
-        var test = String.format("%s > %s", userTime.toSpring(), now.toSpring());
-
-        return isAfter;
+        var userTime = user.getLastCheckInTime().increaseSecond(CHECK_IN_OFFSET);
+        var isBefore = userTime.isBefore(now);
+        return isBefore;
     }
 
     //Chatting
