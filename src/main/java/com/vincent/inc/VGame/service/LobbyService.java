@@ -90,11 +90,7 @@ public class LobbyService {
         
         this.renewCheckIn(lobbyO, userId);
 
-        lobbyO = this.leaveOverdueUser(lobbyO);
-
-        this.saveLobby(lobbyO);
-
-        return lobbyO;
+        return this.saveLobby(lobbyO);
     }
 
     public Lobby saveLobby(Lobby lobby) {
@@ -132,8 +128,6 @@ public class LobbyService {
             lobby.getLobbyInfo().setHost(null);
             this.autoAssignHost(lobby);
         }
-
-        lobby.setCurrentNumberOfPlayer(lobby.getCurrentNumberOfPlayer() - 1);
 
         this.autoCountPlayer(lobby);
         
@@ -212,7 +206,7 @@ public class LobbyService {
         return lobby;
     }
 
-    public Lobby leaveOverdueUser(Lobby lobby) {
+    public Lobby autoLeaveOverdueUser(Lobby lobby) {
         Time now = new Time();
 
         // User host = lobby.getLobbyGame().getHost();
@@ -235,7 +229,12 @@ public class LobbyService {
     }
 
     public boolean isPassCheckInTime(User user, Time now) {
-        return user.getLastCheckInTime().increaseSecond(checkInOffset).isBefore(now);
+        var userTime = user.getLastCheckInTime();
+        var isAfter = userTime.isAfter(now);
+
+        var test = String.format("%s > %s", userTime.toSpring(), now.toSpring());
+
+        return isAfter;
     }
 
     //Chatting
