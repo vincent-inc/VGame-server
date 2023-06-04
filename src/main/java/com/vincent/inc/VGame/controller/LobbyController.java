@@ -62,13 +62,21 @@ public class LobbyController {
 
         return this.lobbyService.leaveLobby(lobbyId, userId);
     }
-
+    
     @PostMapping("chat/{id}")
     public Lobby chat(@RequestHeader("user_id") int userId, @PathVariable("id") String lobbyId, @RequestBody Message message) {
         if(!this.lobbyService.isInLobby(lobbyId, userId))
             return (Lobby) HttpResponseThrowers.throwBadRequest("User does not belong to lobby");
         
         return this.lobbyService.sendMessage(lobbyId, userId, message);
+    }
+
+    @PostMapping("kick/{lobby_id}/{user_id}")
+    public Lobby kickPlayer(@RequestHeader("user_id") int hostId, @PathVariable("lobby_id") String lobbyId, @PathVariable("user_id") int userId) {
+        if(!this.lobbyService.isInLobby(lobbyId, hostId) || !this.lobbyService.isHost(lobbyId, hostId))
+            return (Lobby) HttpResponseThrowers.throwBadRequest("Host does not belong to lobby or user is not host");
+
+        return this.lobbyService.leaveLobby(lobbyId, userId);
     }
 
     @PatchMapping("{id}")

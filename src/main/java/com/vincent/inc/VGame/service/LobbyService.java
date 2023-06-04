@@ -172,6 +172,10 @@ public class LobbyService {
         return lobby.getLobbyInfo().getPlayerList().get(0).getId() == user.getId();
     }
 
+    public boolean isHost(String lobbyId, int userId) {
+        return isHost(this.getLobby(lobbyId), this.getUserWithMask(userId));
+    }
+
     public User getHost(Lobby lobby) {
         return lobby.getLobbyInfo().getPlayerList().get(0);
     }
