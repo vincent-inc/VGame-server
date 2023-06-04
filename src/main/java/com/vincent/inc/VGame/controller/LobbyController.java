@@ -73,8 +73,14 @@ public class LobbyController {
 
     @PostMapping("kick/{lobby_id}/{user_id}")
     public Lobby kickPlayer(@RequestHeader("user_id") int hostId, @PathVariable("lobby_id") String lobbyId, @PathVariable("user_id") int userId) {
-        if(!this.lobbyService.isInLobby(lobbyId, hostId) || !this.lobbyService.isHost(lobbyId, hostId) || hostId == userId)
-            return (Lobby) HttpResponseThrowers.throwBadRequest("Host does not belong to lobby or user is not host or host is user");
+        if(hostId == userId)
+            return (Lobby) HttpResponseThrowers.throwBadRequest("Can't kick your self");
+        
+        if(!this.lobbyService.isInLobby(lobbyId, hostId))
+            return (Lobby) HttpResponseThrowers.throwBadRequest("Host does not belong to lobby");
+
+        if(!this.lobbyService.isHost(lobbyId, hostId))
+            return (Lobby) HttpResponseThrowers.throwBadRequest("User is not host");
 
         return this.lobbyService.leaveLobby(lobbyId, userId);
     }
