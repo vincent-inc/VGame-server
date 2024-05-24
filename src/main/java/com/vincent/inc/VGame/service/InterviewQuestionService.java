@@ -1,6 +1,7 @@
 package com.vincent.inc.VGame.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import com.vincent.inc.VGame.model.interview.InterviewQuestion;
 import com.vincent.inc.VGame.model.interview.MSILoginRequest;
 import com.vincent.inc.VGame.model.interview.MSIQuestionResponse;
 import com.vincent.inc.VGame.openfiegn.MSIClient;
+import com.vincent.inc.viesspringutils.model.GenericPropertyMatcherEnum;
 import com.vincent.inc.viesspringutils.service.ViesService;
 import com.vincent.inc.viesspringutils.util.DatabaseCall;
 
@@ -23,6 +25,9 @@ public class InterviewQuestionService extends ViesService<InterviewQuestion, Int
 
     @Value("${msi.backend.password}")
     private String msiLoginPassword;
+
+    @Autowired
+    private InterviewQuestionTagService interviewQuestionTagService;
 
     @Autowired
     private MSIClient msiClient;
@@ -46,8 +51,11 @@ public class InterviewQuestionService extends ViesService<InterviewQuestion, Int
      */
     public List<InterviewQuestion> syncMsiQuestions() {
         MSIQuestionResponse msiQuestions = fetchMsiQuestions();
-        msiQuestions.getQuestions().parallelStream().forEach(question -> {
+
+        msiQuestions.getQuestions().stream().forEach(question -> {
             InterviewQuestion interviewQuestion = InterviewQuestion.of(question);
+            var newTags = interviewQuestion.getTags().parallelStream().map(e -> this.interviewQuestionTagService.getOrPostIfMatchAny(e, GenericPropertyMatcherEnum.IGNORE_CASE)).collect(Collectors.toList());
+            interviewQuestion.setTags(newTags);
             var foundInterviewQuestion = this.repositoryDao.findBySub(interviewQuestion.getSub());
             if(!ObjectUtils.isEmpty(foundInterviewQuestion))
                 this.patch(foundInterviewQuestion.getId(), interviewQuestion);
