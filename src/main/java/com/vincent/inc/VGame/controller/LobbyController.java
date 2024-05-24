@@ -18,7 +18,7 @@ import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.PasswordPojo;
 import com.vincent.inc.VGame.model.chat.Message;
 import com.vincent.inc.VGame.service.LobbyService;
-import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
+import com.vincent.inc.viesspringutils.exception.HttpResponseThrowers;
 
 @RestController
 @RequestMapping("lobbies")

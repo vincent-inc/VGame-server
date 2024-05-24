@@ -2,7 +2,9 @@ package com.vincent.inc.VGame.model.authenticator;
 
 import java.util.List;
 
-import com.vincent.inc.VGame.util.Time;
+import com.vincent.inc.viesspringutils.model.User.Role;
+import com.vincent.inc.viesspringutils.model.User.UserProfile;
+import com.vincent.inc.viesspringutils.util.DateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User 
-{
-
+public class User {
     private int id;
 
     private String username;
@@ -26,5 +26,14 @@ public class User
 
     private List<Role> userRoles;
 
-    private Time lastCheckInTime;
+    private DateTime lastCheckInTime;
+
+    public static User of(com.vincent.inc.viesspringutils.model.User.User user) {
+        return User.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .userProfile(user.getUserProfile())
+                .userRoles(user.getUserRoles()).build();
+    }
 }

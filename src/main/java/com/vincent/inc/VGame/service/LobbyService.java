@@ -16,11 +16,11 @@ import com.google.gson.Gson;
 import com.vincent.inc.VGame.model.Lobby;
 import com.vincent.inc.VGame.model.authenticator.User;
 import com.vincent.inc.VGame.model.chat.Message;
-import com.vincent.inc.VGame.openfiegn.AuthenticatorClient;
-import com.vincent.inc.VGame.util.ReflectionUtils;
-import com.vincent.inc.VGame.util.Sha256PasswordEncoder;
-import com.vincent.inc.VGame.util.Time;
-import com.vincent.inc.VGame.util.Http.HttpResponseThrowers;
+import com.vincent.inc.viesspringutils.exception.HttpResponseThrowers;
+import com.vincent.inc.viesspringutils.feign.AuthenticatorClient;
+import com.vincent.inc.viesspringutils.util.DateTime;
+import com.vincent.inc.viesspringutils.util.ReflectionUtils;
+import com.vincent.inc.viesspringutils.util.Sha256PasswordEncoder;
 
 @Service
 public class LobbyService {
@@ -38,9 +38,6 @@ public class LobbyService {
 
     @Autowired
     private AuthenticatorClient authenticatorClient;
-
-    @Autowired
-    private Sha256PasswordEncoder sha256PasswordEncoder;
 
     @Autowired
     private Gson gson;
@@ -183,7 +180,7 @@ public class LobbyService {
     public boolean isCorrectPassword(String lobbyId, String password) {
         Lobby lobby = this.getLobby(lobbyId);
         if(!ObjectUtils.isEmpty(lobby.getPassword())) {
-            return this.sha256PasswordEncoder.matches(password, lobby.getPassword());
+            return Sha256PasswordEncoder.matches(password, lobby.getPassword());
         }
         
         return true;
@@ -197,7 +194,7 @@ public class LobbyService {
     }
 
     public Lobby renewCheckIn(Lobby lobby, int userId) {
-        Time now = new Time();
+        DateTime now = new DateTime();
 
         lobby.getLobbyInfo().getPlayerList().stream().forEach(u -> {
             if(u.getId() == userId)
@@ -208,21 +205,21 @@ public class LobbyService {
     }
 
     public Lobby autoLeaveOverdueUser(Lobby lobby) {
-        Time now = new Time();
+        DateTime now = new DateTime();
 
         // User host = lobby.getLobbyGame().getHost();
-        // if(ObjectUtils.isEmpty(host) && isPassCheckInTime(host, now)) {
+        // if(ObjectUtils.isEmpty(host) && isPassCheckInDateTime(host, now)) {
         //     this.leaveLobby(lobby.getId(), host.getId());
         //     leaveOverdueUser(lobby);
         //     return;
         // }
 
-        // lobby.getLobbyGame().setPlayerList(lobby.getLobbyGame().getPlayerList().stream().filter(u -> this.isPassCheckInTime(u, now)).collect(Collectors.toList()));
+        // lobby.getLobbyGame().setPlayerList(lobby.getLobbyGame().getPlayerList().stream().filter(u -> this.isPassCheckInDateTime(u, now)).collect(Collectors.toList()));
         
         List<User> players = lobby.getLobbyInfo().getPlayerList();
         for(int count = players.size() - 1; count >= 0; count --) {
             User player = players.get(count);
-            if(this.isPassCheckInTime(player, now)) {
+            if(this.isPassCheckInDateTime(player, now)) {
                 this.leaveLobby(lobby.getId(), player.getId());
             }
         }
@@ -230,16 +227,16 @@ public class LobbyService {
         return lobby;
     }
 
-    public boolean isPassCheckInTime(User user, Time now) {
-        var userTime = user.getLastCheckInTime().increaseSecond(CHECK_IN_OFFSET);
-        var isBefore = userTime.isBefore(now);
+    public boolean isPassCheckInDateTime(User user, DateTime now) {
+        var userDateTime = user.getLastCheckInTime().plusSeconds(CHECK_IN_OFFSET);
+        var isBefore = userDateTime.isBefore(now);
         return isBefore;
     }
 
     //Chatting
 
     public Lobby sendMessage(String lobbyId, int userId, Message message) {
-        message.setTime(new Time());
+        message.setTime(new DateTime());
         message.setSendBy(this.getUserAlias(this.getUserWithMask(userId)));
         Lobby lobby = this.getLobby(lobbyId);
         if(ObjectUtils.isEmpty(lobby.getMessages()))
@@ -308,7 +305,7 @@ public class LobbyService {
 
     public String encodePassword(String password) {
         if(!ObjectUtils.isEmpty(password))
-            password = this.sha256PasswordEncoder.encode(password);
+            password = Sha256PasswordEncoder.encode(password);
         else {
             password = "";
         }
@@ -317,8 +314,8 @@ public class LobbyService {
     }
 
     public String encodePassword(String oldPassword, String newPassword) {
-        if(!ObjectUtils.isEmpty(newPassword) && !this.sha256PasswordEncoder.matches(newPassword, oldPassword))
-            oldPassword = this.sha256PasswordEncoder.encode(newPassword);
+        if(!ObjectUtils.isEmpty(newPassword) && !Sha256PasswordEncoder.matches(newPassword, oldPassword))
+            oldPassword = Sha256PasswordEncoder.encode(newPassword);
         else
             oldPassword = "";
 
@@ -343,10 +340,8 @@ public class LobbyService {
     }
 
     private User getUserWithMask(int userId) {
-        User user = this.authenticatorClient.getById(userId);
+        User user = User.of(this.authenticatorClient.getUserById(userId));
         user.setPassword(null);
-        user.getUserProfile().setEmail(null);
-
         return user;
     }
 

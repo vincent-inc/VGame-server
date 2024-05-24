@@ -1,8 +1,7 @@
 package com.vincent.inc.VGame.model;
 
-import com.vincent.inc.VGame.util.Time;
+import com.vincent.inc.viesspringutils.util.DateTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,37 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "time")
-public class TimeModel {
+public class TimeModel extends DateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column
-    private int year;
-    
-    @Column
-    private int month;
-    
-    @Column
-    private int day;
-    
-    @Column
-    private int hours;
-    
-    @Column
-    private int minute;
-    
-    @Column
-    private int second;
-    
-    public Time toTime() {
-        return new Time(year, month, day, hours, minute, second);
-    }
 }

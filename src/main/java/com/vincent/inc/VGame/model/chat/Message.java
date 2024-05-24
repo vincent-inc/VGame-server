@@ -1,6 +1,6 @@
 package com.vincent.inc.VGame.model.chat;
 
-import com.vincent.inc.VGame.util.Time;
+import com.vincent.inc.viesspringutils.util.DateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Message {
     private String message;
-    private Time time;
+    private DateTime time;
     private String sendBy;
 }

@@ -18,14 +18,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.ErrorResponseException;
 
 import jakarta.ws.rs.QueryParam;
+import lombok.extern.slf4j.Slf4j;
 import io.swagger.v3.oas.annotations.Operation;
 
 import com.vincent.inc.VGame.model.questionnaire.Question;
 import com.vincent.inc.VGame.service.QuestionService;
-import com.vincent.inc.VGame.util.splunk.Splunk;
 
 @RestController
 @RequestMapping("/questions")
+@Slf4j
 class QuestionController
 {
     @Autowired
@@ -50,7 +51,7 @@ class QuestionController
         }
         catch (Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -71,7 +72,7 @@ class QuestionController
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -95,7 +96,7 @@ class QuestionController
         }
         catch (Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -119,7 +120,7 @@ class QuestionController
         }
         catch (Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -145,7 +146,7 @@ class QuestionController
         }
         catch (Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -166,7 +167,7 @@ class QuestionController
         }
         catch (Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -187,7 +188,7 @@ class QuestionController
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -208,7 +209,7 @@ class QuestionController
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -229,7 +230,7 @@ class QuestionController
         }
         catch (Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }

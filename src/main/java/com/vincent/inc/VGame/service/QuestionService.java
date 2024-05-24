@@ -14,10 +14,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import com.google.gson.Gson;
 import com.vincent.inc.VGame.dao.questionnaire.QuestionDao;
 import com.vincent.inc.VGame.model.questionnaire.Question;
-import com.vincent.inc.VGame.util.ReflectionUtils;
-import com.vincent.inc.VGame.util.splunk.Splunk;
+import com.vincent.inc.viesspringutils.util.ReflectionUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class QuestionService
 {
     public static final String HASH_KEY = "com.vincent.inc.VGame.questions";
@@ -51,7 +53,7 @@ public class QuestionService
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
         }
 
         //get from database
@@ -70,7 +72,7 @@ public class QuestionService
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
         }
 
         return question;
@@ -78,13 +80,13 @@ public class QuestionService
 
     public List<Question> getAllByMatchAll(Question question)
     {
-        Example<Question> example = (Example<Question>) ReflectionUtils.getMatchAllMatcher(question);
+        Example<Question> example = (Example<Question>) ReflectionUtils.getExampleAllMatcher(question);
         return this.questionDao.findAll(example);
     }
 
     public List<Question> getAllByMatchAny(Question question)
     {
-        Example<Question> example = (Example<Question>) ReflectionUtils.getMatchAnyMatcher(question);
+        Example<Question> example = (Example<Question>) ReflectionUtils.getExampleAnyMatcher(question);
         return this.questionDao.findAll(example);
     }
 
@@ -115,7 +117,7 @@ public class QuestionService
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
         }
 
         return oldQuestion;
@@ -142,7 +144,7 @@ public class QuestionService
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
         }
 
         return oldQuestion;
@@ -160,7 +162,7 @@ public class QuestionService
         }
         catch(Exception ex)
         {
-            Splunk.logError(ex);
+            log.error(ex.getMessage(), ex);
         }
     }
 }
