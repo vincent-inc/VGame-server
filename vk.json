@@ -1,0 +1,80 @@
+[
+	{
+		"configId": 1,
+		"configName": "java with git hook",
+		"path": "/vincent-services/v-eco",
+		"jobName": "vgame-server-dev",
+		"replaceMap": {
+			"projectUrl": "https://github.com/vincent-inc/VGame-server",
+			"displayName": "vgame-server Dev",
+			"upperCaseServiceName": "VGAME-SERVER-DEV",
+			"environment": "dev",
+			"dockerImage": "vgame-server"
+		}
+	},
+	{
+		"configId": 2,
+		"configName": "k8s",
+		"path": "/vincent-services/v-eco",
+		"jobName": "vgame-server-dev-k8s",
+		"replaceMap": {
+			"projectUrl": "https://github.com/vincent-inc/VGame-server",
+			"displayName": "vgame-server Dev k8s",
+			"triggerAfterJobName": "vgame-server-dev",
+			"k8sServiceFolderName": "vgame-server",
+			"environment": "dev"
+		}
+	},
+	{
+		"configId": 3,
+		"configName": "java",
+		"path": "/vincent-services/v-eco",
+		"jobName": "vgame-server-stage",
+		"replaceMap": {
+			"projectUrl": "https://github.com/vincent-inc/VGame-server",
+			"displayName": "vgame-server Stage",
+			"upperCaseServiceName": "VGAME-SERVER-STAGE",
+			"environment": "stage",
+			"dockerImage": "vgame-server"
+		}
+	},
+	{
+		"configId": 2,
+		"configName": "k8s",
+		"path": "/vincent-services/v-eco",
+		"jobName": "vgame-server-stage-k8s",
+		"replaceMap": {
+			"projectUrl": "https://github.com/vincent-inc/VGame-server",
+			"displayName": "vgame-server Stage k8s",
+			"triggerAfterJobName": "vgame-server-stage",
+			"k8sServiceFolderName": "vgame-server",
+			"environment": "stage"
+		}
+	},
+	{
+		"configId": 3,
+		"configName": "java",
+		"path": "/vincent-services/v-eco",
+		"jobName": "vgame-server-prod",
+		"replaceMap": {
+			"projectUrl": "https://github.com/vincent-inc/VGame-server",
+			"displayName": "vgame-server Prod",
+			"upperCaseServiceName": "VGAME-SERVER-STAGE",
+			"environment": "prod",
+			"dockerImage": "vgame-server"
+		}
+	},
+	{
+		"configId": 2,
+		"configName": "k8s",
+		"path": "/vincent-services/v-eco",
+		"jobName": "vgame-server-prod-k8s",
+		"replaceMap": {
+			"projectUrl": "https://github.com/vincent-inc/VGame-server",
+			"displayName": "vgame-server Prod k8s",
+			"triggerAfterJobName": "vgame-server-prod",
+			"k8sServiceFolderName": "vgame-server",
+			"environment": "prod"
+		}
+	}
+]
